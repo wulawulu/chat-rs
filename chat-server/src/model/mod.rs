@@ -4,6 +4,8 @@ use sqlx::FromRow;
 
 mod user;
 
+pub use user::{CreateUser, SigninUser};
+
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize, PartialEq)]
 pub struct User {
     pub id: i64,
