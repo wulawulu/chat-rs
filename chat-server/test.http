@@ -2,6 +2,7 @@
 
 POST http://localhost:6688/api/signup
 Content-Type: application/json
+Authorization: Bearer fpKL54jvWmEGVoRdCNj
 
 {
   "fullname": "Alice Chen",
@@ -28,3 +29,10 @@ Content-Type: application/json
   "email": "alice@acme.org",
   "password": "123456"
 }
+
+
+### chat
+
+GET http://localhost:6688/api/chat
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NDA4MjE1MDIsImV4cCI6MTc0MTQyNjMwMiwibmJmIjoxNzQwODIxNTAyLCJpc3MiOiJjaGF0LXNlcnZlciIsImF1ZCI6ImNoYXRfd2ViIiwiaWQiOjEsImZ1bGxuYW1lIjoiQWxpY2UgQ2hlbiIsImVtYWlsIjoiYWxpY2VAYWNtZS5vcmciLCJjcmVhdGVkX2F0IjoiMjAyNS0wMi0yNlQxMzo1NjoxNC40NDk2MzVaIn0.6j0OhV4xGN8EpnVCa8FAgKOkQLNX4RzoNR69buDiClTfBCNf6MUXufVkFHjfL1XAdbIJvq7BLPNMUUUMLbhTBQ

@@ -1,20 +1,21 @@
 mod config;
 mod error;
 mod handler;
+mod middleware;
 mod model;
 mod utils;
 
-pub use config::AppConfig;
-pub use error::AppError;
-use handler::*;
-pub use model::User;
-use std::fmt;
-
+use crate::middleware::auth;
 use crate::utils::{DecodingKey, EncodingKey};
 use anyhow::Context;
 use axum::routing::{get, patch, post};
 use axum::Router;
+pub use config::AppConfig;
+pub use error::AppError;
+use handler::*;
+pub use model::User;
 use sqlx::PgPool;
+use std::fmt;
 use std::ops::Deref;
 use std::sync::Arc;
 
@@ -69,8 +70,6 @@ pub async fn get_router(config: AppConfig) -> Result<Router, AppError> {
     let state = AppState::try_new(config).await?;
 
     let api = Router::new()
-        .route("/signin", post(signin_handler))
-        .route("/signup", post(signup_handler))
         .route("/chat", get(list_chat_handler).post(create_chat_handler))
         .route(
             "/chat/{id}",
@@ -78,7 +77,10 @@ pub async fn get_router(config: AppConfig) -> Result<Router, AppError> {
                 .delete(delete_chat_handler)
                 .post(send_message_handler),
         )
-        .route("/chat/{id}/messages", get(list_messages_handler));
+        .route("/chat/{id}/messages", get(list_messages_handler))
+        .route_layer(axum::middleware::from_fn_with_state(state.clone(), auth))
+        .route("/signup", post(signup_handler))
+        .route("/signin", post(signin_handler));
 
     Ok(Router::new()
         .route("/", get(index_handler))
