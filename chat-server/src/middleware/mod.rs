@@ -2,8 +2,10 @@ mod auth;
 mod request_id;
 mod server_time;
 
+use crate::middleware::request_id::set_request_id;
 use crate::middleware::server_time::ServerTimeLayer;
-pub use auth::auth;
+pub use auth::verify_token;
+use axum::middleware::from_fn;
 use axum::Router;
 use tower::ServiceBuilder;
 use tower_http::trace::TraceLayer;
@@ -11,7 +13,6 @@ use tower_http::trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse};
 use tower_http::{compression::CompressionLayer, LatencyUnit};
 use tracing::Level;
 
-#[allow(unused)]
 const REQUEST_ID_HEADER: &str = "x-request-id";
 const SERVER_TIME_HEADER: &str = "x-server-time";
 
@@ -28,6 +29,7 @@ pub fn set_layer(app: Router) -> Router {
         ServiceBuilder::new()
             .layer(tracing_layer)
             .layer(CompressionLayer::new().gzip(true).br(true).deflate(true))
+            .layer(from_fn(set_request_id))
             .layer(ServerTimeLayer),
     )
 }

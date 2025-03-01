@@ -5,7 +5,7 @@ mod middleware;
 mod model;
 mod utils;
 
-use crate::middleware::{auth, set_layer};
+use crate::middleware::{set_layer, verify_token};
 use crate::utils::{DecodingKey, EncodingKey};
 use anyhow::Context;
 use axum::routing::{get, patch, post};
@@ -78,7 +78,10 @@ pub async fn get_router(config: AppConfig) -> Result<Router, AppError> {
                 .post(send_message_handler),
         )
         .route("/chat/{id}/messages", get(list_messages_handler))
-        .route_layer(axum::middleware::from_fn_with_state(state.clone(), auth))
+        .route_layer(axum::middleware::from_fn_with_state(
+            state.clone(),
+            verify_token,
+        ))
         .route("/signup", post(signup_handler))
         .route("/signin", post(signin_handler));
 

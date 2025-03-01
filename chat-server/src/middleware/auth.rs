@@ -9,7 +9,7 @@ use axum::{
 use axum_extra::{headers::authorization::Bearer, headers::Authorization, TypedHeader};
 use tracing::warn;
 
-pub async fn auth(
+pub async fn verify_token(
     State(state): State<AppState>,
     TypedHeader(Authorization(bearer)): TypedHeader<Authorization<Bearer>>,
     mut req: Request,
