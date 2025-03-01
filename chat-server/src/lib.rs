@@ -5,7 +5,7 @@ mod middleware;
 mod model;
 mod utils;
 
-use crate::middleware::auth;
+use crate::middleware::{auth, set_layer};
 use crate::utils::{DecodingKey, EncodingKey};
 use anyhow::Context;
 use axum::routing::{get, patch, post};
@@ -82,10 +82,11 @@ pub async fn get_router(config: AppConfig) -> Result<Router, AppError> {
         .route("/signup", post(signup_handler))
         .route("/signin", post(signin_handler));
 
-    Ok(Router::new()
+    let app = Router::new()
         .route("/", get(index_handler))
         .nest("/api", api)
-        .with_state(state))
+        .with_state(state);
+    Ok(set_layer(app))
 }
 
 #[cfg(test)]
