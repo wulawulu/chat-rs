@@ -5,8 +5,9 @@ Content-Type: application/json
 Authorization: Bearer fpKL54jvWmEGVoRdCNj
 
 {
-  "fullname": "Alice Chen",
-  "email": "alice@acme.org",
+  "workspace": "grad",
+  "fullname": "Cristiano Ronaldo",
+  "email": "Cris@acme.org",
   "password": "123456"
 }
 
@@ -35,4 +36,10 @@ Content-Type: application/json
 
 GET http://localhost:6688/api/chat
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NDA4MjE1MDIsImV4cCI6MTc0MTQyNjMwMiwibmJmIjoxNzQwODIxNTAyLCJpc3MiOiJjaGF0LXNlcnZlciIsImF1ZCI6ImNoYXRfd2ViIiwiaWQiOjEsImZ1bGxuYW1lIjoiQWxpY2UgQ2hlbiIsImVtYWlsIjoiYWxpY2VAYWNtZS5vcmciLCJjcmVhdGVkX2F0IjoiMjAyNS0wMi0yNlQxMzo1NjoxNC40NDk2MzVaIn0.6j0OhV4xGN8EpnVCa8FAgKOkQLNX4RzoNR69buDiClTfBCNf6MUXufVkFHjfL1XAdbIJvq7BLPNMUUUMLbhTBQ
+Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NDEwMDYzMzIsImV4cCI6MTc0MTYxMTEzMiwibmJmIjoxNzQxMDA2MzMyLCJpc3MiOiJjaGF0LXNlcnZlciIsImF1ZCI6ImNoYXRfd2ViIiwiaWQiOjEsIndzX2lkIjoxLCJmdWxsbmFtZSI6IkFsaWNlIENoZW4iLCJlbWFpbCI6ImFsaWNlQGFjbWUub3JnIiwiY3JlYXRlZF9hdCI6IjIwMjUtMDMtMDNUMTI6NDk6MjAuOTUwMjMwWiJ9._xX-VCgBXYLHIjLUScEuqucRltNbtzi2YA05ZAoSEkIOAB7s-9z7LZSfO27jx-T62EU7H8IKGR0uEsJJbx96DA
+
+### chat
+
+GET http://localhost:6688/api/users
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NDEwMDYzMzIsImV4cCI6MTc0MTYxMTEzMiwibmJmIjoxNzQxMDA2MzMyLCJpc3MiOiJjaGF0LXNlcnZlciIsImF1ZCI6ImNoYXRfd2ViIiwiaWQiOjEsIndzX2lkIjoxLCJmdWxsbmFtZSI6IkFsaWNlIENoZW4iLCJlbWFpbCI6ImFsaWNlQGFjbWUub3JnIiwiY3JlYXRlZF9hdCI6IjIwMjUtMDMtMDNUMTI6NDk6MjAuOTUwMjMwWiJ9._xX-VCgBXYLHIjLUScEuqucRltNbtzi2YA05ZAoSEkIOAB7s-9z7LZSfO27jx-T62EU7H8IKGR0uEsJJbx96DA

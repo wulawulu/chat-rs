@@ -52,7 +52,7 @@ mod tests {
     async fn signup_should_work() -> Result<()> {
         let config = AppConfig::load()?;
         let (_tdb, state) = AppState::new_for_test(config).await?;
-        let input = CreateUser::new("wu@github.com", "wu", "password");
+        let input = CreateUser::new("none", "wu@github.com", "wu", "password");
         let ret = signup_handler(State(state), Json(input))
             .await?
             .into_response();
