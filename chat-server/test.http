@@ -7,7 +7,7 @@ Authorization: Bearer fpKL54jvWmEGVoRdCNj
 {
   "workspace": "grad",
   "fullname": "Cristiano Ronaldo",
-  "email": "Cris@acme.org",
+  "email": "Cris@github.org",
   "password": "123456"
 }
 
@@ -17,7 +17,7 @@ POST http://localhost:6688/api/signin
 Content-Type: application/json
 
 {
-  "email": "tchen@acme.org",
+  "email": "Cris@github.org",
   "password": "123456"
 }
 
@@ -27,18 +27,36 @@ POST http://localhost:6688/api/signin
 Content-Type: application/json
 
 {
-  "email": "alice@acme.org",
+  "email": "alice@github.org",
   "password": "123456"
 }
 
 
+
+### create chat
+POST http://localhost:6688/api/chats
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NDExNDM4NjYsImV4cCI6MTc0MTc0ODY2NiwibmJmIjoxNzQxMTQzODY2LCJpc3MiOiJjaGF0LXNlcnZlciIsImF1ZCI6ImNoYXRfd2ViIiwiaWQiOjIsIndzX2lkIjoxLCJmdWxsbmFtZSI6IkNyaXN0aWFubyBSb25hbGRvIiwiZW1haWwiOiJDcmlzQGdpdGh1Yi5vcmciLCJjcmVhdGVkX2F0IjoiMjAyNS0wMy0wNVQwMzowNDoyNi45NDU0MzBaIn0.2txRDuusVPArQUmVg3geWpoCzjll0rTwezH9kHS_-31R1pAdF90gmYN8wRpImXbRPL1dnbe72bF_0arXei4UCg
+
+{
+  "name": "github",
+  "members": [1, 2],
+  "public": false
+}
+
 ### chat
 
-GET http://localhost:6688/api/chat
+GET http://localhost:6688/api/chats
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NDEwMDYzMzIsImV4cCI6MTc0MTYxMTEzMiwibmJmIjoxNzQxMDA2MzMyLCJpc3MiOiJjaGF0LXNlcnZlciIsImF1ZCI6ImNoYXRfd2ViIiwiaWQiOjEsIndzX2lkIjoxLCJmdWxsbmFtZSI6IkFsaWNlIENoZW4iLCJlbWFpbCI6ImFsaWNlQGFjbWUub3JnIiwiY3JlYXRlZF9hdCI6IjIwMjUtMDMtMDNUMTI6NDk6MjAuOTUwMjMwWiJ9._xX-VCgBXYLHIjLUScEuqucRltNbtzi2YA05ZAoSEkIOAB7s-9z7LZSfO27jx-T62EU7H8IKGR0uEsJJbx96DA
 
 ### chat
+
+GET http://localhost:6688/api/chats/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NDEwMDYzMzIsImV4cCI6MTc0MTYxMTEzMiwibmJmIjoxNzQxMDA2MzMyLCJpc3MiOiJjaGF0LXNlcnZlciIsImF1ZCI6ImNoYXRfd2ViIiwiaWQiOjEsIndzX2lkIjoxLCJmdWxsbmFtZSI6IkFsaWNlIENoZW4iLCJlbWFpbCI6ImFsaWNlQGFjbWUub3JnIiwiY3JlYXRlZF9hdCI6IjIwMjUtMDMtMDNUMTI6NDk6MjAuOTUwMjMwWiJ9._xX-VCgBXYLHIjLUScEuqucRltNbtzi2YA05ZAoSEkIOAB7s-9z7LZSfO27jx-T62EU7H8IKGR0uEsJJbx96DA
+
+### users
 
 GET http://localhost:6688/api/users
 Content-Type: application/json

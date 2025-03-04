@@ -8,7 +8,7 @@ mod utils;
 use crate::middleware::{set_layer, verify_token};
 use crate::utils::{DecodingKey, EncodingKey};
 use anyhow::Context;
-use axum::routing::{get, patch, post};
+use axum::routing::{get, post};
 use axum::Router;
 pub use config::AppConfig;
 pub use error::AppError;
@@ -71,14 +71,15 @@ pub async fn get_router(config: AppConfig) -> Result<Router, AppError> {
 
     let api = Router::new()
         .route("/users", get(list_chat_users_handler))
-        .route("/chat", get(list_chat_handler).post(create_chat_handler))
+        .route("/chats", get(list_chat_handler).post(create_chat_handler))
         .route(
-            "/chat/{id}",
-            patch(update_chat_handler)
+            "/chats/{id}",
+            get(get_chat_handler)
+                .patch(update_chat_handler)
                 .delete(delete_chat_handler)
                 .post(send_message_handler),
         )
-        .route("/chat/{id}/messages", get(list_messages_handler))
+        .route("/chats/{id}/messages", get(list_messages_handler))
         .route_layer(axum::middleware::from_fn_with_state(
             state.clone(),
             verify_token,
