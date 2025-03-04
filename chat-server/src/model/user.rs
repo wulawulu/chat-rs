@@ -1,4 +1,4 @@
-use crate::model::Workspace;
+use crate::model::{ChatUser, Workspace};
 use crate::{AppError, User};
 use argon2::password_hash::rand_core::OsRng;
 use argon2::password_hash::SaltString;
@@ -89,6 +89,22 @@ impl User {
             }
             None => Ok(None),
         }
+    }
+}
+
+impl ChatUser {
+    pub async fn fetch_by_ids(ids: &[i64], pool: &PgPool) -> Result<Vec<Self>, AppError> {
+        let users = sqlx::query_as(
+            r#"
+            SELECT id, fullname, email
+            FROM users
+            WHERE id = ANY($1)
+            "#,
+        )
+        .bind(ids)
+        .fetch_all(pool)
+        .await?;
+        Ok(users)
     }
 }
 

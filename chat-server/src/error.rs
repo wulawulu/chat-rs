@@ -1,5 +1,5 @@
 use axum::response::{IntoResponse, Response};
-use axum::{http, Json};
+use axum::{http, http::StatusCode, Json};
 use serde::{Deserialize, Serialize};
 
 #[derive(thiserror::Error, Debug)]
@@ -17,17 +17,29 @@ pub enum AppError {
     JwtError(#[from] jwt_simple::Error),
 
     #[error("http header parse error: {0}")]
-    HttpHeaderError(#[from] axum::http::header::InvalidHeaderValue),
+    HttpHeaderError(#[from] http::header::InvalidHeaderValue),
+
+    #[error("create chat error: {0}")]
+    CreateChatError(String),
+
+    #[error("update chat error: {0}")]
+    UpdateChatError(String),
+
+    #[error("Not found: {0}")]
+    NotFound(String),
 }
 
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
         let status = match &self {
-            AppError::SqlxError(_) => http::StatusCode::INTERNAL_SERVER_ERROR,
-            AppError::EmailAlreadyExists(_) => http::StatusCode::CONFLICT,
-            AppError::PasswordHashError(_) => http::StatusCode::UNPROCESSABLE_ENTITY,
-            AppError::JwtError(_) => http::StatusCode::FORBIDDEN,
-            AppError::HttpHeaderError(_) => http::StatusCode::UNPROCESSABLE_ENTITY,
+            AppError::SqlxError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            AppError::EmailAlreadyExists(_) => StatusCode::CONFLICT,
+            AppError::PasswordHashError(_) => StatusCode::UNPROCESSABLE_ENTITY,
+            AppError::JwtError(_) => StatusCode::FORBIDDEN,
+            AppError::HttpHeaderError(_) => StatusCode::UNPROCESSABLE_ENTITY,
+            AppError::CreateChatError(_) => StatusCode::BAD_REQUEST,
+            AppError::UpdateChatError(_) => StatusCode::BAD_REQUEST,
+            AppError::NotFound(_) => StatusCode::NOT_FOUND,
         };
         (status, Json(ErrorOutput::new(self.to_string()))).into_response()
     }
