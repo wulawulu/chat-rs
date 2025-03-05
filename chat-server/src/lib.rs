@@ -80,6 +80,8 @@ pub async fn get_router(config: AppConfig) -> Result<Router, AppError> {
                 .post(send_message_handler),
         )
         .route("/chats/{id}/messages", get(list_messages_handler))
+        .route("/upload", post(upload_handler))
+        .route("/file/{ws_id}/{*path}", get(file_handler))
         .route_layer(axum::middleware::from_fn_with_state(
             state.clone(),
             verify_token,

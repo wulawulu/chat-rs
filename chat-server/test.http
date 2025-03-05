@@ -13,6 +13,7 @@ Authorization: Bearer fpKL54jvWmEGVoRdCNj
 
 ### signin user (valid)
 
+# @name signin
 POST http://localhost:6688/api/signin
 Content-Type: application/json
 
@@ -20,6 +21,9 @@ Content-Type: application/json
   "email": "Cris@github.org",
   "password": "123456"
 }
+
+@token = {{signin.response.body.token}}
+
 
 ### signin user (invalid)
 
@@ -61,3 +65,27 @@ Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NDEwMDYzM
 GET http://localhost:6688/api/users
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NDEwMDYzMzIsImV4cCI6MTc0MTYxMTEzMiwibmJmIjoxNzQxMDA2MzMyLCJpc3MiOiJjaGF0LXNlcnZlciIsImF1ZCI6ImNoYXRfd2ViIiwiaWQiOjEsIndzX2lkIjoxLCJmdWxsbmFtZSI6IkFsaWNlIENoZW4iLCJlbWFpbCI6ImFsaWNlQGFjbWUub3JnIiwiY3JlYXRlZF9hdCI6IjIwMjUtMDMtMDNUMTI6NDk6MjAuOTUwMjMwWiJ9._xX-VCgBXYLHIjLUScEuqucRltNbtzi2YA05ZAoSEkIOAB7s-9z7LZSfO27jx-T62EU7H8IKGR0uEsJJbx96DA
+
+### upload files
+
+POST http://localhost:6688/api/upload
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=MyBoundary
+
+--MyBoundary
+Content-Disposition: form-data; filename="xdiff1.png"
+Content-Type: application/octet-stream
+
+< C:\Users\wutuo\Pictures\Screenshots\屏幕截图 2024-09-01 172206.png
+--MyBoundary
+Content-Disposition: form-data; filename="hello.txt"
+Content-Type: text/plain
+
+Hello, World!
+--MyBoundary--
+
+
+### get files
+
+GET http://localhost:6688/api/file/1/f0e/4ba/ea7ff41df9c9bcf89c997d1892bf61b213.png
+Authorization: Bearer {{token}}

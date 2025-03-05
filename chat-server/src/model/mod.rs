@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 
 mod chat;
+mod file;
 mod user;
 mod workspace;
 
@@ -53,4 +54,11 @@ pub struct Chat {
     pub r#type: ChatType,
     pub members: Vec<i64>,
     pub created_at: DateTime<Utc>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ChatFile {
+    pub ws_id: u64,
+    pub ext: String,
+    pub hash: String,
 }
