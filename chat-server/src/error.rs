@@ -22,6 +22,12 @@ pub enum AppError {
     #[error("create chat error: {0}")]
     CreateChatError(String),
 
+    #[error("{0}")]
+    ChatFileError(String),
+
+    #[error("create message error: {0}")]
+    CreateMessageError(String),
+
     #[error("io error: {0}")]
     IoError(#[from] std::io::Error),
 
@@ -44,6 +50,8 @@ impl IntoResponse for AppError {
             AppError::UpdateChatError(_) => StatusCode::BAD_REQUEST,
             AppError::NotFound(_) => StatusCode::NOT_FOUND,
             AppError::IoError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            AppError::ChatFileError(_) => StatusCode::BAD_REQUEST,
+            AppError::CreateMessageError(_) => StatusCode::BAD_REQUEST,
         };
         (status, Json(ErrorOutput::new(self.to_string()))).into_response()
     }
