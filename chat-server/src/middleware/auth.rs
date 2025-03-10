@@ -39,7 +39,7 @@ pub async fn verify_token(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{AppConfig, User};
+    use crate::User;
     use anyhow::Result;
     use axum::body::Body;
     use axum::http::Request;
@@ -54,8 +54,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_verify_token() -> Result<()> {
-        let config = AppConfig::load()?;
-        let (_tdb, state) = AppState::new_for_test(config).await?;
+        let (_tdb, state) = AppState::new_for_test().await?;
 
         let user = User::new(1, "wu", "wu@github.org");
         let token = state.ek.sign(user)?;
