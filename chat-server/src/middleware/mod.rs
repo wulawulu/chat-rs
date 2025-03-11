@@ -1,4 +1,5 @@
 mod auth;
+mod chat;
 mod request_id;
 mod server_time;
 
@@ -7,6 +8,7 @@ use crate::middleware::server_time::ServerTimeLayer;
 pub use auth::verify_token;
 use axum::middleware::from_fn;
 use axum::Router;
+pub use chat::verify_chat;
 use tower::ServiceBuilder;
 use tower_http::trace::TraceLayer;
 use tower_http::trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse};

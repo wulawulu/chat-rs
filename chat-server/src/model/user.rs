@@ -20,6 +20,7 @@ pub struct SigninUser {
     pub password: String,
 }
 
+#[allow(dead_code)]
 impl AppState {
     /// Find a user by email
     pub async fn find_user_by_email(&self, email: &str) -> Result<Option<User>, AppError> {
@@ -89,9 +90,7 @@ impl AppState {
             None => Ok(None),
         }
     }
-}
 
-impl AppState {
     pub async fn fetch_chat_user_by_ids(&self, ids: &[i64]) -> Result<Vec<ChatUser>, AppError> {
         let users = sqlx::query_as(
             r#"
@@ -104,6 +103,16 @@ impl AppState {
         .fetch_all(&self.pool)
         .await?;
         Ok(users)
+    }
+
+    pub async fn find_user_by_id(&self, id: i64) -> Result<Option<User>, AppError> {
+        let user = sqlx::query_as(
+            "SELECT id, ws_id, fullname, email, created_at FROM users WHERE id = $1",
+        )
+        .bind(id)
+        .fetch_optional(&self.pool)
+        .await?;
+        Ok(user)
     }
 }
 
@@ -213,6 +222,17 @@ mod tests {
         let user = state.verify(&input).await?;
         assert!(user.is_some());
 
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn find_user_by_id_should_work() -> Result<()> {
+        let (_tdb, state) = AppState::new_for_test().await?;
+
+        let user = state.find_user_by_id(1).await?;
+        assert!(user.is_some());
+        let user = user.unwrap();
+        assert_eq!(user.id, 1);
         Ok(())
     }
 }

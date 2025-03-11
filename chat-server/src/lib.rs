@@ -5,9 +5,10 @@ mod middleware;
 mod model;
 mod utils;
 
-use crate::middleware::{set_layer, verify_token};
+use crate::middleware::{set_layer, verify_chat, verify_token};
 use crate::utils::{DecodingKey, EncodingKey};
 use anyhow::Context;
+use axum::middleware::from_fn_with_state;
 use axum::routing::{get, post};
 use axum::Router;
 pub use config::AppConfig;
@@ -68,20 +69,26 @@ impl fmt::Debug for AppStateInner {
 
 pub async fn get_router(config: AppConfig) -> Result<Router, AppError> {
     let state = AppState::try_new(config).await?;
-
-    let api = Router::new()
-        .route("/users", get(list_chat_users_handler))
-        .route("/chats", get(list_chat_handler).post(create_chat_handler))
+    let chat = Router::new()
         .route(
-            "/chats/{id}",
+            "/{id}",
             get(get_chat_handler)
                 .patch(update_chat_handler)
                 .delete(delete_chat_handler)
-                .post(send_message_handler),
+                .post(create_chat_handler),
         )
-        .route("/chats/{id}/messages", get(list_messages_handler))
+        .route(
+            "/{id}/messages",
+            get(list_messages_handler).post(send_message_handler),
+        )
+        .layer(from_fn_with_state(state.clone(), verify_chat))
+        .route("/", get(list_chat_handler).post(create_chat_handler));
+
+    let api = Router::new()
+        .route("/users", get(list_chat_users_handler))
+        .nest("/chats", chat)
         .route("/upload", post(upload_handler))
-        .route("/file/{ws_id}/{*path}", get(file_handler))
+        .route("/files/{ws_id}/{*path}", get(file_handler))
         .route_layer(axum::middleware::from_fn_with_state(
             state.clone(),
             verify_token,
@@ -112,7 +119,6 @@ mod test_util {
             let ek = EncodingKey::load(&config.auth.sk).context("load sk failed")?;
             let post = config.server.db_url.rfind('/').expect("invalid db_url");
             let server_url = &config.server.db_url[..post];
-            println!("server_url: {}", server_url);
             let (tdb, pool) = get_test_pool(Some(server_url)).await;
             let state = Self {
                 inner: Arc::new(AppStateInner {

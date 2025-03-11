@@ -1,3 +1,4 @@
+use axum::extract::Query;
 use axum::{
     extract::{Multipart, Path, State},
     http::HeaderMap,
@@ -7,14 +8,28 @@ use axum::{
 use tokio::fs;
 use tracing::{info, warn};
 
+use crate::model::{CreateMessage, ListMessages};
 use crate::{model::ChatFile, AppError, AppState, User};
 
-pub(crate) async fn send_message_handler() -> impl IntoResponse {
-    "send_message"
+pub(crate) async fn list_messages_handler(
+    State(state): State<AppState>,
+    Path(chat_id): Path<i64>,
+    Query(input): Query<ListMessages>,
+) -> Result<impl IntoResponse, AppError> {
+    let messages = state.list_message(input, chat_id as _).await?;
+    Ok(Json(messages))
 }
 
-pub(crate) async fn list_messages_handler() -> impl IntoResponse {
-    "list_messages"
+pub(crate) async fn send_message_handler(
+    Extension(user): Extension<User>,
+    State(state): State<AppState>,
+    Path(chat_id): Path<i64>,
+    Json(input): Json<CreateMessage>,
+) -> Result<impl IntoResponse, AppError> {
+    let msg = state
+        .create_message(input, chat_id as _, user.id as _)
+        .await?;
+    Ok(Json(msg))
 }
 
 #[allow(dead_code)]
@@ -67,7 +82,7 @@ pub(crate) async fn upload_handler(
             fs::create_dir_all(path.parent().expect("file path parent should exists")).await?;
             fs::write(path, data).await?;
         }
-        files.push(file.url(ws_id));
+        files.push(file.url());
     }
 
     Ok(Json(files))

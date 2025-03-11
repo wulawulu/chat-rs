@@ -11,6 +11,19 @@ Authorization: Bearer fpKL54jvWmEGVoRdCNj
   "password": "123456"
 }
 
+### signup user
+
+POST http://localhost:6688/api/signup
+Content-Type: application/json
+Authorization: Bearer fpKL54jvWmEGVoRdCNj
+
+{
+  "workspace": "grad",
+  "fullname": "Alex Chen",
+  "email": "Alex@github.org",
+  "password": "123456"
+}
+
 ### signin user (valid)
 
 # @name signin
@@ -22,7 +35,9 @@ Content-Type: application/json
   "password": "123456"
 }
 
-@token = {{signin.response.body.token}}
+> {% client.global.set("token", response.body.token); %}
+
+
 
 
 ### signin user (invalid)
@@ -52,19 +67,19 @@ Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NDExNDM4N
 
 GET http://localhost:6688/api/chats
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NDEwMDYzMzIsImV4cCI6MTc0MTYxMTEzMiwibmJmIjoxNzQxMDA2MzMyLCJpc3MiOiJjaGF0LXNlcnZlciIsImF1ZCI6ImNoYXRfd2ViIiwiaWQiOjEsIndzX2lkIjoxLCJmdWxsbmFtZSI6IkFsaWNlIENoZW4iLCJlbWFpbCI6ImFsaWNlQGFjbWUub3JnIiwiY3JlYXRlZF9hdCI6IjIwMjUtMDMtMDNUMTI6NDk6MjAuOTUwMjMwWiJ9._xX-VCgBXYLHIjLUScEuqucRltNbtzi2YA05ZAoSEkIOAB7s-9z7LZSfO27jx-T62EU7H8IKGR0uEsJJbx96DA
+Authorization: Bearer {{token}}
 
 ### chat
 
 GET http://localhost:6688/api/chats/1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NDEwMDYzMzIsImV4cCI6MTc0MTYxMTEzMiwibmJmIjoxNzQxMDA2MzMyLCJpc3MiOiJjaGF0LXNlcnZlciIsImF1ZCI6ImNoYXRfd2ViIiwiaWQiOjEsIndzX2lkIjoxLCJmdWxsbmFtZSI6IkFsaWNlIENoZW4iLCJlbWFpbCI6ImFsaWNlQGFjbWUub3JnIiwiY3JlYXRlZF9hdCI6IjIwMjUtMDMtMDNUMTI6NDk6MjAuOTUwMjMwWiJ9._xX-VCgBXYLHIjLUScEuqucRltNbtzi2YA05ZAoSEkIOAB7s-9z7LZSfO27jx-T62EU7H8IKGR0uEsJJbx96DA
+Authorization: Bearer {{token}}
 
 ### users
 
 GET http://localhost:6688/api/users
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NDEwMDYzMzIsImV4cCI6MTc0MTYxMTEzMiwibmJmIjoxNzQxMDA2MzMyLCJpc3MiOiJjaGF0LXNlcnZlciIsImF1ZCI6ImNoYXRfd2ViIiwiaWQiOjEsIndzX2lkIjoxLCJmdWxsbmFtZSI6IkFsaWNlIENoZW4iLCJlbWFpbCI6ImFsaWNlQGFjbWUub3JnIiwiY3JlYXRlZF9hdCI6IjIwMjUtMDMtMDNUMTI6NDk6MjAuOTUwMjMwWiJ9._xX-VCgBXYLHIjLUScEuqucRltNbtzi2YA05ZAoSEkIOAB7s-9z7LZSfO27jx-T62EU7H8IKGR0uEsJJbx96DA
+Authorization: Bearer {{token}}
 
 ### upload files
 
@@ -87,5 +102,20 @@ Hello, World!
 
 ### get files
 
-GET http://localhost:6688/api/file/1/f0e/4ba/ea7ff41df9c9bcf89c997d1892bf61b213.png
+GET http://localhost:6688/api/files/1/232/197/439badd72a380decd4f8bf7510a695aae6.png
+Authorization: Bearer {{token}}
+
+### send a message
+
+POST http://localhost:6688/api/chats/1/messages
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+ {
+     "content": "Hello, World!",
+     "files": []
+ }
+
+### get messages
+GET http://localhost:6688/api/chats/1/messages?limit=6&last_id=5
 Authorization: Bearer {{token}}
