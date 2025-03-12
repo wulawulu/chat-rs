@@ -1,5 +1,5 @@
-use crate::model::{Chat, ChatType};
 use crate::{AppError, AppState};
+use chat_core::{Chat, ChatType};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -204,6 +204,7 @@ impl CreateChat {
 mod tests {
     use super::*;
     use anyhow::Result;
+    use chat_core::ChatType;
 
     #[tokio::test]
     async fn create_single_chat_should_work() -> Result<()> {

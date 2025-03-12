@@ -1,9 +1,10 @@
 use crate::model::{CreateChat, UpdateChat};
-use crate::{AppError, AppState, User};
+use crate::{AppError, AppState};
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::{Extension, Json};
+use chat_core::User;
 
 pub(crate) async fn list_chat_handler(
     Extension(user): Extension<User>,

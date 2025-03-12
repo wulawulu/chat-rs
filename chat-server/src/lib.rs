@@ -3,18 +3,16 @@ mod error;
 mod handler;
 mod middleware;
 mod model;
-mod utils;
 
-use crate::middleware::{set_layer, verify_chat, verify_token};
-use crate::utils::{DecodingKey, EncodingKey};
+use crate::middleware::verify_chat;
 use anyhow::Context;
 use axum::middleware::from_fn_with_state;
 use axum::routing::{get, post};
 use axum::Router;
+use chat_core::{set_layer, verify_token, DecodingKey, EncodingKey, TokenVerify, User};
 pub use config::AppConfig;
 pub use error::AppError;
 use handler::*;
-pub use model::User;
 use sqlx::PgPool;
 use std::fmt;
 use std::ops::Deref;
@@ -48,6 +46,14 @@ impl AppState {
                 pool,
             }),
         })
+    }
+}
+
+impl TokenVerify for AppState {
+    type Error = AppError;
+
+    fn verify(&self, token: &str) -> Result<User, Self::Error> {
+        self.dk.verify(token).map_err(AppError::from)
     }
 }
 
@@ -89,10 +95,7 @@ pub async fn get_router(config: AppConfig) -> Result<Router, AppError> {
         .nest("/chats", chat)
         .route("/upload", post(upload_handler))
         .route("/files/{ws_id}/{*path}", get(file_handler))
-        .route_layer(axum::middleware::from_fn_with_state(
-            state.clone(),
-            verify_token,
-        ))
+        .route_layer(from_fn_with_state(state.clone(), verify_token::<AppState>))
         .route("/signup", post(signup_handler))
         .route("/signin", post(signin_handler));
 
@@ -105,9 +108,9 @@ pub async fn get_router(config: AppConfig) -> Result<Router, AppError> {
 
 #[cfg(test)]
 mod test_util {
-    use crate::utils::{DecodingKey, EncodingKey};
     use crate::{AppConfig, AppError, AppState, AppStateInner};
     use anyhow::Context;
+    use chat_core::{DecodingKey, EncodingKey};
     use sqlx::{Executor, PgPool};
     use sqlx_db_tester::TestPg;
     use std::sync::Arc;

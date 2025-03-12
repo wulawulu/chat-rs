@@ -1,3 +1,5 @@
+use crate::model::{CreateMessage, ListMessages};
+use crate::{model::ChatFile, AppError, AppState};
 use axum::extract::Query;
 use axum::{
     extract::{Multipart, Path, State},
@@ -5,11 +7,9 @@ use axum::{
     response::IntoResponse,
     Extension, Json,
 };
+use chat_core::User;
 use tokio::fs;
 use tracing::{info, warn};
-
-use crate::model::{CreateMessage, ListMessages};
-use crate::{model::ChatFile, AppError, AppState, User};
 
 pub(crate) async fn list_messages_handler(
     State(state): State<AppState>,

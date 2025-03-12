@@ -7,7 +7,7 @@ use sha1::{Digest, Sha1};
 
 use crate::AppError;
 
-use super::ChatFile;
+use crate::model::ChatFile;
 
 #[allow(dead_code)]
 impl ChatFile {
@@ -76,7 +76,7 @@ impl FromStr for ChatFile {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::model::ChatFile;
 
     #[test]
     fn chat_file_new_should_work() {

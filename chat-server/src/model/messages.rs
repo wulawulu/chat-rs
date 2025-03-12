@@ -1,9 +1,9 @@
+use crate::{AppError, AppState};
+use chat_core::Message;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 
-use crate::{AppError, AppState};
-
-use super::{ChatFile, Message};
+use super::ChatFile;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateMessage {
