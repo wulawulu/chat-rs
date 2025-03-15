@@ -55,7 +55,7 @@ Content-Type: application/json
 ### create chat
 POST http://localhost:6688/api/chats
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NDExNDM4NjYsImV4cCI6MTc0MTc0ODY2NiwibmJmIjoxNzQxMTQzODY2LCJpc3MiOiJjaGF0LXNlcnZlciIsImF1ZCI6ImNoYXRfd2ViIiwiaWQiOjIsIndzX2lkIjoxLCJmdWxsbmFtZSI6IkNyaXN0aWFubyBSb25hbGRvIiwiZW1haWwiOiJDcmlzQGdpdGh1Yi5vcmciLCJjcmVhdGVkX2F0IjoiMjAyNS0wMy0wNVQwMzowNDoyNi45NDU0MzBaIn0.2txRDuusVPArQUmVg3geWpoCzjll0rTwezH9kHS_-31R1pAdF90gmYN8wRpImXbRPL1dnbe72bF_0arXei4UCg
+Authorization: Bearer {{token}}
 
 {
   "name": "github",

@@ -1,5 +1,5 @@
 use anyhow::Result;
-use notify_server::get_router;
+use notify_server::{get_router, setup_pg_listener, AppConfig};
 use tokio::net::TcpListener;
 use tracing::info;
 use tracing_subscriber::filter::LevelFilter;
@@ -13,9 +13,11 @@ async fn main() -> Result<()> {
     let layer = Layer::new().with_filter(LevelFilter::INFO);
     tracing_subscriber::registry().with(layer).init();
 
-    let addr = "0.0.0.0:6687";
+    let config = AppConfig::load()?;
+    let addr = format!("0.0.0.0:{}", config.server.port);
 
-    let app = get_router();
+    let (app, app_state) = get_router(config).await;
+    setup_pg_listener(app_state).await?;
     let listener = TcpListener::bind(&addr).await?;
     info!("Listening on: {}", addr);
 
