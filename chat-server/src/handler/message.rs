@@ -1,6 +1,7 @@
 use crate::model::{CreateMessage, ListMessages};
 use crate::{model::ChatFile, AppError, AppState};
 use axum::extract::Query;
+use axum::http::StatusCode;
 use axum::{
     extract::{Multipart, Path, State},
     http::HeaderMap,
@@ -29,7 +30,7 @@ pub(crate) async fn send_message_handler(
     let msg = state
         .create_message(input, chat_id as _, user.id as _)
         .await?;
-    Ok(Json(msg))
+    Ok((StatusCode::CREATED, Json(msg)))
 }
 
 #[allow(dead_code)]

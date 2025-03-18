@@ -69,8 +69,9 @@ impl fmt::Debug for AppStateInner {
 
 const INDEX_HTML: &str = include_str!("../index.html");
 
-pub async fn get_router(config: AppConfig) -> (Router, AppState) {
+pub async fn get_router(config: AppConfig) -> anyhow::Result<Router> {
     let app_state = AppState::try_new(config).await.expect("init failed");
+    setup_pg_listener(app_state.clone()).await?;
     let router = Router::new()
         .route("/events", get(sse_handler))
         .layer(from_fn_with_state(
@@ -79,7 +80,8 @@ pub async fn get_router(config: AppConfig) -> (Router, AppState) {
         ))
         .route("/", get(index_handler))
         .with_state(app_state.clone());
-    (router, app_state)
+
+    Ok(router)
 }
 
 async fn index_handler() -> impl IntoResponse {

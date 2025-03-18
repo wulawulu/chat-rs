@@ -19,12 +19,12 @@ use std::ops::Deref;
 use std::sync::Arc;
 
 #[derive(Debug, Clone)]
-pub(crate) struct AppState {
+pub struct AppState {
     inner: Arc<AppStateInner>,
 }
 
 #[allow(unused)]
-pub(crate) struct AppStateInner {
+pub struct AppStateInner {
     pub(crate) config: AppConfig,
     pub(crate) dk: DecodingKey,
     pub(crate) ek: EncodingKey,
@@ -73,8 +73,7 @@ impl fmt::Debug for AppStateInner {
     }
 }
 
-pub async fn get_router(config: AppConfig) -> Result<Router, AppError> {
-    let state = AppState::try_new(config).await?;
+pub async fn get_router(state: AppState) -> Result<Router, AppError> {
     let chat = Router::new()
         .route(
             "/{id}",
@@ -106,7 +105,7 @@ pub async fn get_router(config: AppConfig) -> Result<Router, AppError> {
     Ok(set_layer(app))
 }
 
-#[cfg(test)]
+#[cfg(feature = "test-util")]
 mod test_util {
     use crate::{AppConfig, AppError, AppState, AppStateInner};
     use anyhow::Context;
