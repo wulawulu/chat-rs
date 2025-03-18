@@ -1,4 +1,5 @@
 use super::TokenVerify;
+use axum::extract::Query;
 use axum::{
     extract::Request,
     extract::State,
@@ -8,11 +9,18 @@ use axum::{
 };
 use axum_extra::headers::{HeaderMap, HeaderMapExt};
 use axum_extra::{headers::Authorization, headers::authorization::Bearer};
+use serde::Deserialize;
 use tracing::warn;
+
+#[derive(Debug, Deserialize)]
+pub struct Param {
+    access_token: Option<String>,
+}
 
 pub async fn verify_token<T>(
     State(state): State<T>,
     headers: HeaderMap,
+    Query(params): Query<Param>,
     mut req: Request,
     next: Next,
 ) -> Response
@@ -20,12 +28,16 @@ where
     T: TokenVerify + Clone + Send + Sync + 'static,
 {
     let option = headers.typed_get::<Authorization<Bearer>>();
-    let Some(Authorization(bearer)) = option else {
+    let token = if let Some(Authorization(bearer)) = option {
+        bearer.token().to_string()
+    } else if params.access_token.is_some() {
+        params.access_token.unwrap()
+    } else {
         let msg = "missing Authorization header";
         warn!(msg);
         return (StatusCode::UNAUTHORIZED, msg).into_response();
     };
-    match state.verify(bearer.token()) {
+    match state.verify(&token) {
         Ok(user) => {
             req.extensions_mut().insert(user);
         }
@@ -106,15 +118,35 @@ mod tests {
 
         let response = app
             .clone()
+            .oneshot(
+                Request::builder()
+                    .uri(format!("/?access_token={}", token))
+                    .body(Body::empty())?,
+            )
+            .await?;
+        assert_eq!(response.status(), StatusCode::OK);
+
+        let response = app
+            .clone()
             .oneshot(Request::builder().uri("/").body(Body::empty())?)
             .await?;
         assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
 
         let response = app
+            .clone()
             .oneshot(
                 Request::builder()
                     .uri("/")
                     .header("Authorization", format!("Bearer {}", "bad token"))
+                    .body(Body::empty())?,
+            )
+            .await?;
+        assert_eq!(response.status(), StatusCode::FORBIDDEN);
+
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .uri(format!("/?access_token={}", "bad-token"))
                     .body(Body::empty())?,
             )
             .await?;
