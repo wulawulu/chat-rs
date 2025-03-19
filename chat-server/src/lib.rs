@@ -3,8 +3,10 @@ mod error;
 mod handler;
 mod middleware;
 mod model;
+mod openapi;
 
 use crate::middleware::verify_chat;
+use crate::openapi::OpenApiRouter;
 use anyhow::Context;
 use axum::middleware::from_fn_with_state;
 use axum::routing::{get, post};
@@ -12,7 +14,9 @@ use axum::Router;
 use chat_core::{set_layer, verify_token, DecodingKey, EncodingKey, TokenVerify, User};
 pub use config::AppConfig;
 pub use error::AppError;
+pub use error::ErrorOutput;
 use handler::*;
+pub use model::{CreateChat, CreateMessage, CreateUser, ListMessages, SigninUser};
 use sqlx::PgPool;
 use std::fmt;
 use std::ops::Deref;
@@ -79,12 +83,11 @@ pub async fn get_router(state: AppState) -> Result<Router, AppError> {
             "/{id}",
             get(get_chat_handler)
                 .patch(update_chat_handler)
-                .delete(delete_chat_handler)
-                .post(create_chat_handler),
+                .delete(delete_chat_handler),
         )
         .route(
             "/{id}/messages",
-            get(list_messages_handler).post(send_message_handler),
+            get(list_message_handler).post(send_message_handler),
         )
         .layer(from_fn_with_state(state.clone(), verify_chat))
         .route("/", get(list_chat_handler).post(create_chat_handler));
@@ -99,6 +102,7 @@ pub async fn get_router(state: AppState) -> Result<Router, AppError> {
         .route("/signin", post(signin_handler));
 
     let app = Router::new()
+        .openapi()
         .route("/", get(index_handler))
         .nest("/api", api)
         .with_state(state);

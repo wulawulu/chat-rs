@@ -1,6 +1,7 @@
 use axum::response::{IntoResponse, Response};
 use axum::{http, http::StatusCode, Json};
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
 #[derive(thiserror::Error, Debug)]
 pub enum AppError {
@@ -57,7 +58,7 @@ impl IntoResponse for AppError {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, ToSchema, Serialize, Deserialize)]
 pub struct ErrorOutput {
     pub error: String,
 }

@@ -1,5 +1,5 @@
 use crate::model::{CreateMessage, ListMessages};
-use crate::{model::ChatFile, AppError, AppState};
+use crate::{model::ChatFile, AppError, AppState, ErrorOutput};
 use axum::extract::Query;
 use axum::http::StatusCode;
 use axum::{
@@ -8,11 +8,27 @@ use axum::{
     response::IntoResponse,
     Extension, Json,
 };
-use chat_core::User;
+use chat_core::{Message, User};
 use tokio::fs;
 use tracing::{info, warn};
 
-pub(crate) async fn list_messages_handler(
+#[utoipa::path(
+    get,
+    path = "/api/chats/{id}/messages",
+    params(
+         ("id" = u64, Path, description = "Chat id"),
+    ),
+    request_body(content = ListMessages, description = "获取消息", content_type = "application/json"),
+    responses(
+         (status = 200, description = "List of messages", body = Vec<Message>),
+         (status = 400, description = "Invalid input", body = ErrorOutput),
+    ),
+    tag="message",
+    security(
+         ("token" = [])
+    )
+)]
+pub(crate) async fn list_message_handler(
     State(state): State<AppState>,
     Path(chat_id): Path<i64>,
     Query(input): Query<ListMessages>,
@@ -21,6 +37,21 @@ pub(crate) async fn list_messages_handler(
     Ok(Json(messages))
 }
 
+#[utoipa::path(
+    post,
+    path = "/api/chats/{id}/messages",
+    params(
+         ("id" = u64, Path, description = "Chat id"),
+    ),
+    request_body(content = CreateMessage, description = "创建消息", content_type = "application/json"),
+    responses(
+         (status = 201, description = "Message created", body = Message),
+    ),
+    tag="message",
+    security(
+         ("token" = [])
+    )
+)]
 pub(crate) async fn send_message_handler(
     Extension(user): Extension<User>,
     State(state): State<AppState>,
@@ -33,6 +64,17 @@ pub(crate) async fn send_message_handler(
     Ok((StatusCode::CREATED, Json(msg)))
 }
 
+#[utoipa::path(
+    get,
+    path = "/api/files/{ws_id}/{*path}",
+    responses(
+         (status = 200, description = "Chat users"),
+    ),
+    tag="message",
+    security(
+         ("token" = [])
+    )
+)]
 #[allow(dead_code)]
 pub(crate) async fn file_handler(
     Extension(user): Extension<User>,
@@ -59,6 +101,17 @@ pub(crate) async fn file_handler(
     Ok((headers, body))
 }
 
+#[utoipa::path(
+    post,
+    path = "/api/upload",
+    responses(
+         (status = 200, description = "File created", body = Vec<String>),
+    ),
+    tag="message",
+    security(
+         ("token" = [])
+    )
+)]
 pub(crate) async fn upload_handler(
     Extension(user): Extension<User>,
     State(state): State<AppState>,

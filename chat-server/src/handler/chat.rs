@@ -1,11 +1,22 @@
 use crate::model::{CreateChat, UpdateChat};
-use crate::{AppError, AppState};
+use crate::{AppError, AppState, ErrorOutput};
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::{Extension, Json};
-use chat_core::User;
+use chat_core::{Chat, User};
 
+#[utoipa::path(
+    get,
+    path = "/api/chats",
+    responses(
+         (status = 200, description = "List of chats", body = Vec<Chat>),
+    ),
+    tag="chat",
+    security(
+         ("token" = [])
+    )
+)]
 pub(crate) async fn list_chat_handler(
     Extension(user): Extension<User>,
     State(state): State<AppState>,
@@ -14,6 +25,17 @@ pub(crate) async fn list_chat_handler(
     Ok((StatusCode::OK, Json(chat)))
 }
 
+#[utoipa::path(
+    post,
+    path = "/api/chats",
+    responses(
+         (status = 201, description = "Chat created", body = Chat),
+    ),
+    tag="chat",
+    security(
+         ("token" = [])
+    )
+)]
 pub(crate) async fn create_chat_handler(
     Extension(user): Extension<User>,
     State(state): State<AppState>,
@@ -23,6 +45,21 @@ pub(crate) async fn create_chat_handler(
     Ok((StatusCode::CREATED, Json(chat)))
 }
 
+#[utoipa::path(
+    get,
+    path = "/api/chats/{id}",
+    params(
+         ("id" = u64, Path, description = "Chat id")
+    ),
+    responses(
+         (status = 200, description = "Chat found", body = Chat),
+         (status = 404, description = "Chat not found", body = ErrorOutput),
+    ),
+    tag="chat",
+    security(
+         ("token" = [])
+    )
+)]
 pub(crate) async fn get_chat_handler(
     State(state): State<AppState>,
     Path(id): Path<u64>,
@@ -34,6 +71,22 @@ pub(crate) async fn get_chat_handler(
     }
 }
 
+#[utoipa::path(
+    patch,
+    path = "/api/chats/{id}",
+    params(
+         ("id" = u64, Path, description = "Chat id"),
+            UpdateChat
+    ),
+    responses(
+         (status = 200, description = "Chat found", body = Chat),
+         (status = 404, description = "Chat not found", body = ErrorOutput),
+    ),
+    tag="chat",
+    security(
+         ("token" = [])
+    )
+)]
 pub(crate) async fn update_chat_handler(
     State(state): State<AppState>,
     Path(id): Path<u64>,
@@ -43,6 +96,20 @@ pub(crate) async fn update_chat_handler(
     Ok(Json(chat))
 }
 
+#[utoipa::path(
+    delete,
+    path = "/api/chats/{id}",
+    params(
+         ("id" = u64, Path, description = "Chat id")
+    ),
+    responses(
+         (status = 200, description = "Chat deleted"),
+    ),
+    tag="chat",
+    security(
+         ("token" = [])
+    )
+)]
 pub(crate) async fn delete_chat_handler(
     State(state): State<AppState>,
     Path(id): Path<u64>,

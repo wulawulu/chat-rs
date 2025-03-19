@@ -5,8 +5,9 @@ use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
 use chat_core::{ChatUser, User};
 use serde::{Deserialize, Serialize};
 use std::mem;
+use utoipa::ToSchema;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, ToSchema, Serialize, Deserialize)]
 pub struct CreateUser {
     pub workspace: String,
     pub email: String,
@@ -14,7 +15,7 @@ pub struct CreateUser {
     pub password: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, ToSchema, Serialize, Deserialize)]
 pub struct SigninUser {
     pub email: String,
     pub password: String,
