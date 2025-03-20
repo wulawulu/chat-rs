@@ -20,7 +20,7 @@
 <h1>Server Sent Events</h1>
 
 <script lang="javascript">
-    let token='eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NDIyNjMwMzEsImV4cCI6MTc0Mjg2NzgzMSwibmJmIjoxNzQyMjYzMDMxLCJpc3MiOiJjaGF0LXNlcnZlciIsImF1ZCI6ImNoYXRfd2ViIiwiaWQiOjEsIndzX2lkIjoxLCJmdWxsbmFtZSI6IkNyaXN0aWFubyBSb25hbGRvIiwiZW1haWwiOiJDcmlzQGdpdGh1Yi5vcmciLCJjcmVhdGVkX2F0IjoiMjAyNS0wMy0xOFQwMTo0MDoyMy40NDI2OThaIn0.e1TFHdaYhQARy0zybXSF7M6HNM5E4bT7X1JYJ8SXHiEJNJpOyy_bgK60sXEnkc6pGNHT9ffMZgklRY5DmGvgCQ';
+    let token='eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NDI0NzEyMzcsImV4cCI6MTc0MzA3NjAzNywibmJmIjoxNzQyNDcxMjM3LCJpc3MiOiJjaGF0LXNlcnZlciIsImF1ZCI6ImNoYXRfd2ViIiwiaWQiOjIsIndzX2lkIjoxLCJmdWxsbmFtZSI6IkFsZXggQ2hlbiIsImVtYWlsIjoiQWxleEBnaXRodWIub3JnIiwiY3JlYXRlZF9hdCI6IjIwMjUtMDMtMTVUMTM6NTU6NDQuOTYwOTcwWiJ9.Ud4P5PPCokKGCc6PWV985MO6RQME9PQWGeFx_p_3VxzHIo3lGiC8rp8-pe7nPSe73lC3MoQmX80kMViac4O4Bw';
     let source = new EventSource(`/events?access_token=${token}`);
     source.onmessage = function(event) {
         console.log("Got:", event.data);
@@ -39,6 +39,10 @@
 
     source.addEventListener("NewMessage", function(event) {
         console.log("NewMessage:", event.data);
+    });
+
+    source.addEventListener("ChatNameUpdate", function(event) {
+        console.log("ChatNameUpdate:", event.data);
     });
 </script>
 </body>

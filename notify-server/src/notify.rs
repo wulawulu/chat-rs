@@ -26,6 +26,7 @@ struct ChatMessageCreated {
 pub enum AppEvent {
     NewChat(Chat),
     AddToChat(Chat),
+    ChatNameUpdate(Chat),
     RemoveFromChat(Chat),
     NewMessage(Message),
 }
@@ -45,7 +46,18 @@ impl Notification {
                     get_affected_chat_user_ids(data.old.as_ref(), data.new.as_ref());
                 let event = match data.op.as_str() {
                     "INSERT" => AppEvent::NewChat(data.new.expect("new should exist")),
-                    "UPDATE" => AppEvent::AddToChat(data.new.expect("new should exist")),
+                    "UPDATE" => match (data.old, data.new) {
+                        (Some(old), Some(new)) => {
+                            if old.members.eq(&new.members) {
+                                AppEvent::ChatNameUpdate(new)
+                            } else {
+                                AppEvent::AddToChat(new)
+                            }
+                        }
+                        (_, _) => {
+                            return Err(anyhow::anyhow!("update should have both old and new"))
+                        }
+                    },
                     "DELETE" => AppEvent::RemoveFromChat(data.old.expect("old should exist")),
                     _ => return Err(anyhow::anyhow!("Invalid operation: {}", data.op)),
                 };
@@ -73,7 +85,7 @@ fn get_affected_chat_user_ids(old: Option<&Chat>, new: Option<&Chat>) -> HashSet
             let old_members: HashSet<_> = old.members.iter().map(|v| *v as u64).collect();
             let new_members: HashSet<_> = new.members.iter().map(|v| *v as u64).collect();
             if old_members == new_members {
-                HashSet::new()
+                new_members
             } else {
                 old_members.union(&new_members).copied().collect()
             }

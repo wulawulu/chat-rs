@@ -76,8 +76,8 @@ pub(crate) async fn get_chat_handler(
     path = "/api/chats/{id}",
     params(
          ("id" = u64, Path, description = "Chat id"),
-            UpdateChat
     ),
+    request_body(content = UpdateChat, description = "update chat", content_type = "application/json"),
     responses(
          (status = 200, description = "Chat found", body = Chat),
          (status = 404, description = "Chat not found", body = ErrorOutput),
