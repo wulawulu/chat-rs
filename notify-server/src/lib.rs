@@ -24,7 +24,34 @@ use tokio::sync::broadcast;
 
 pub use notify::setup_pg_listener;
 
-type UserMap = Arc<DashMap<u64, broadcast::Sender<Arc<AppEvent>>>>;
+type UserMap = Arc<DashMap<u64, SenderReceiverCnt>>;
+
+pub struct SenderReceiverCnt {
+    sender: broadcast::Sender<Arc<AppEvent>>,
+    cnt: usize,
+}
+
+impl Deref for SenderReceiverCnt {
+    type Target = broadcast::Sender<Arc<AppEvent>>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.sender
+    }
+}
+
+impl SenderReceiverCnt {
+    pub fn new(sender: broadcast::Sender<Arc<AppEvent>>) -> Self {
+        Self { sender, cnt: 0 }
+    }
+
+    pub fn reduce(&mut self) {
+        self.cnt -= 1;
+    }
+
+    pub fn increase(&mut self) {
+        self.cnt += 1;
+    }
+}
 
 #[derive(Debug, Clone)]
 pub struct AppState(Arc<AppStateInner>);
