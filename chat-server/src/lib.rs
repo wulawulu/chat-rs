@@ -8,6 +8,7 @@ mod openapi;
 use crate::middleware::verify_chat;
 use crate::openapi::OpenApiRouter;
 use anyhow::Context;
+use axum::http::Method;
 use axum::middleware::from_fn_with_state;
 use axum::routing::{get, post};
 use axum::Router;
@@ -21,6 +22,7 @@ use sqlx::PgPool;
 use std::fmt;
 use std::ops::Deref;
 use std::sync::Arc;
+use tower_http::cors::{self, CorsLayer};
 
 #[derive(Debug, Clone)]
 pub struct AppState {
@@ -92,6 +94,16 @@ pub async fn get_router(state: AppState) -> Result<Router, AppError> {
         .layer(from_fn_with_state(state.clone(), verify_chat))
         .route("/", get(list_chat_handler).post(create_chat_handler));
 
+    let cors = CorsLayer::new()
+        .allow_methods([
+            Method::GET,
+            Method::POST,
+            Method::PATCH,
+            Method::DELETE,
+            Method::PUT,
+        ])
+        .allow_origin(cors::Any)
+        .allow_headers(cors::Any);
     let api = Router::new()
         .route("/users", get(list_chat_users_handler))
         .nest("/chats", chat)
@@ -99,7 +111,8 @@ pub async fn get_router(state: AppState) -> Result<Router, AppError> {
         .route("/files/{ws_id}/{*path}", get(file_handler))
         .route_layer(from_fn_with_state(state.clone(), verify_token::<AppState>))
         .route("/signup", post(signup_handler))
-        .route("/signin", post(signin_handler));
+        .route("/signin", post(signin_handler))
+        .layer(cors);
 
     let app = Router::new()
         .openapi()
