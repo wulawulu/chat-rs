@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS chats
     -- user id list
     members    bigint[]  NOT NULL,
     created_at timestamptz DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (ws_id, name)
+    UNIQUE (ws_id, name, members)
 );
 
 -- create message table
