@@ -32,7 +32,7 @@ POST http://localhost:6688/api/signin
 Content-Type: application/json
 
 {
-"email": "alice@acme.org", "password": "123456"
+"email": "tchen@acme.org", "password": "123456"
 }
 
 @token = {{signin.response.body.token}}
@@ -85,7 +85,7 @@ Authorization: Bearer {{token}}
 
 ### send a message
 
-POST http://localhost:6688/api/chats/6/messages
+POST http://localhost:6688/api/chats/2/messages
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -95,5 +95,5 @@ Authorization: Bearer {{token}}
 
 ### get messages
 
-GET http://localhost:6688/api/chats/1/messages?limit=6&last_id=5
+GET http://localhost:6688/api/chats/2/messages
 Authorization: Bearer {{token}}
