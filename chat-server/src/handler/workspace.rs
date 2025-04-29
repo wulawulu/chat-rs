@@ -8,9 +8,8 @@ use chat_core::{ChatUser, User};
     get,
     path = "/api/users",
     responses(
-         (status = 200, description = "Chat users", body = ChatUser),
+         (status = 200, description = "Chat users", body = Vec<ChatUser>),
     ),
-    tag="user",
     security(
          ("token" = [])
     )
