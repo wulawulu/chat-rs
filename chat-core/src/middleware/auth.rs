@@ -14,7 +14,7 @@ use tracing::warn;
 
 #[derive(Debug, Deserialize)]
 pub struct Param {
-    access_token: Option<String>,
+    token: Option<String>,
 }
 
 pub async fn verify_token<T>(
@@ -30,8 +30,8 @@ where
     let option = headers.typed_get::<Authorization<Bearer>>();
     let token = if let Some(Authorization(bearer)) = option {
         bearer.token().to_string()
-    } else if params.access_token.is_some() {
-        params.access_token.unwrap()
+    } else if params.token.is_some() {
+        params.token.unwrap()
     } else {
         let msg = "missing Authorization header";
         warn!(msg);
@@ -120,7 +120,7 @@ mod tests {
             .clone()
             .oneshot(
                 Request::builder()
-                    .uri(format!("/?access_token={}", token))
+                    .uri(format!("/?token={}", token))
                     .body(Body::empty())?,
             )
             .await?;
@@ -146,7 +146,7 @@ mod tests {
         let response = app
             .oneshot(
                 Request::builder()
-                    .uri(format!("/?access_token={}", "bad-token"))
+                    .uri(format!("/?token={}", "bad-token"))
                     .body(Body::empty())?,
             )
             .await?;

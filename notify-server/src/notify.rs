@@ -31,6 +31,7 @@ pub enum AppEvent {
     NewMessage(Message),
 }
 
+#[derive(Debug)]
 pub struct Notification {
     affect_users: HashSet<u64>,
     event: Arc<AppEvent>,
@@ -67,7 +68,8 @@ impl Notification {
                 })
             }
             "chat_message_created" => {
-                let data: ChatMessageCreated = serde_json::from_str(payload)?;
+                let data: ChatMessageCreated =
+                    serde_json::from_str(payload).expect("failed to parse");
                 Ok(Self {
                     affect_users: data.members.into_iter().map(|v| v as u64).collect(),
                     event: Arc::new(AppEvent::NewMessage(data.message)),
@@ -107,6 +109,7 @@ pub async fn setup_pg_listener(state: AppState) -> anyhow::Result<()> {
         while let Some(Ok(notif)) = stream.next().await {
             info!("Received notification: {:?}", notif);
             let notification = Notification::load(notif.channel(), notif.payload())?;
+            info!("Notification: {:?}", notification);
             let users = &state.users;
             for user_id in notification.affect_users {
                 if let Some(entry) = users.get(&user_id) {

@@ -4,10 +4,12 @@ mod notify;
 mod sse;
 
 use anyhow::Context;
+use axum::http::Method;
 pub use config::AppConfig;
 use std::fmt;
 use std::ops::Deref;
 use std::sync::Arc;
+use tower_http::cors::{self, CorsLayer};
 
 use crate::error::AppError;
 use crate::notify::AppEvent;
@@ -99,12 +101,24 @@ const INDEX_HTML: &str = include_str!("../index.html");
 pub async fn get_router(config: AppConfig) -> anyhow::Result<Router> {
     let app_state = AppState::try_new(config).await.expect("init failed");
     setup_pg_listener(app_state.clone()).await?;
+    let cors = CorsLayer::new()
+        // allow `GET` and `POST` when accessing the resource
+        .allow_methods([
+            Method::GET,
+            Method::POST,
+            Method::PATCH,
+            Method::DELETE,
+            Method::PUT,
+        ])
+        .allow_origin(cors::Any)
+        .allow_headers(cors::Any);
     let router = Router::new()
         .route("/events", get(sse_handler))
         .layer(from_fn_with_state(
             app_state.clone(),
             verify_token::<AppState>,
         ))
+        .layer(cors)
         .route("/", get(index_handler))
         .with_state(app_state.clone());
 

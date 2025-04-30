@@ -21,7 +21,7 @@
 
 <script lang="javascript">
     let token='eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NDI0NzEyMzcsImV4cCI6MTc0MzA3NjAzNywibmJmIjoxNzQyNDcxMjM3LCJpc3MiOiJjaGF0LXNlcnZlciIsImF1ZCI6ImNoYXRfd2ViIiwiaWQiOjIsIndzX2lkIjoxLCJmdWxsbmFtZSI6IkFsZXggQ2hlbiIsImVtYWlsIjoiQWxleEBnaXRodWIub3JnIiwiY3JlYXRlZF9hdCI6IjIwMjUtMDMtMTVUMTM6NTU6NDQuOTYwOTcwWiJ9.Ud4P5PPCokKGCc6PWV985MO6RQME9PQWGeFx_p_3VxzHIo3lGiC8rp8-pe7nPSe73lC3MoQmX80kMViac4O4Bw';
-    let source = new EventSource(`/events?access_token=${token}`);
+    let source = new EventSource(`/events?token=${token}`);
     source.onmessage = function(event) {
         console.log("Got:", event.data);
     };
