@@ -21,8 +21,7 @@ pub struct AuthOutput {
     ),
     tag="user",
 )]
-/// Create a new user in the chat system with email and password.
-///
+/// Create a new user in the chat system with email, password workspace and full name.
 /// - If the email already exists, it will return 409.
 /// - Otherwise, it will return 201 with a token.
 /// - If the workspace doesn't exist, it will create one.
@@ -36,6 +35,7 @@ pub(crate) async fn signup_handler(
     Ok((StatusCode::CREATED, body))
 }
 
+/// Sign in a user with email and password.
 #[utoipa::path(
     post,
     path = "/api/signin",

@@ -4,6 +4,7 @@ use axum::response::IntoResponse;
 use axum::{Extension, Json};
 use chat_core::{ChatUser, User};
 
+/// List all users in the workspace.
 #[utoipa::path(
     get,
     path = "/api/users",
